@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using IdentityExample.StormpathIdentity;
 
 namespace IdentitySample.Controllers
 {
@@ -16,17 +17,17 @@ namespace IdentitySample.Controllers
         {
         }
 
-        public ManageController(ApplicationUserManager userManager)
+        public ManageController(StormpathUserManager userManager)
         {
             UserManager = userManager;
         }
 
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
+        private StormpathUserManager _userManager;
+        public StormpathUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<StormpathUserManager>();
             }
             private set
             {
@@ -300,7 +301,7 @@ namespace IdentitySample.Controllers
             }
             var userLogins = await UserManager.GetLoginsAsync(User.Identity.GetUserId());
             var otherLogins = AuthenticationManager.GetExternalAuthenticationTypes().Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
-            ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
+            ViewBag.ShowRemoveButton = userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
@@ -343,7 +344,7 @@ namespace IdentitySample.Controllers
             }
         }
 
-        private async Task SignInAsync(ApplicationUser user, bool isPersistent)
+        private async Task SignInAsync(StormpathUser user, bool isPersistent)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
             AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, await user.GenerateUserIdentityAsync(UserManager));
@@ -359,22 +360,7 @@ namespace IdentitySample.Controllers
 
         private bool HasPassword()
         {
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PasswordHash != null;
-            }
-            return false;
-        }
-
-        private bool HasPhoneNumber()
-        {
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PhoneNumber != null;
-            }
-            return false;
+            return true;
         }
 
         public enum ManageMessageId

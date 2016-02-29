@@ -5,6 +5,7 @@ using Microsoft.Owin.Security.Cookies;
 using IdentitySample.Models;
 using Owin;
 using System;
+using IdentityExample.StormpathIdentity;
 
 namespace IdentitySample
 {
@@ -14,9 +15,8 @@ namespace IdentitySample
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and role manager to use a single instance per request
-            app.CreatePerOwinContext(ApplicationDbContext.Create);
-            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-            app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
+            app.CreatePerOwinContext(StormpathContext.Create);
+            app.CreatePerOwinContext<StormpathUserManager>(StormpathUserManager.Create);
             app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
@@ -30,7 +30,7 @@ namespace IdentitySample
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<StormpathUserManager, StormpathUser>(
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
