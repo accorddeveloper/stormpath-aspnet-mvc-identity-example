@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using Stormpath.SDK.Account;
 
 namespace IdentityExample.StormpathIdentity
 {
@@ -15,16 +16,34 @@ namespace IdentityExample.StormpathIdentity
             this.Id = string.Empty;
         }
 
-        //public StormpathUser(string href)
-        //{
-        //    this.Id = href;
-        //}
+        public static StormpathUser MapFrom(IAccount account)
+        {
+            if (account == null)
+            {
+                return null;
+            }
 
-        public string Id { get; set; }
+            return new StormpathUser()
+            {
+                Email = account.Email,
+                Id = account.Href,
+                UserName = account.Username,
+                FirstName = account.GivenName,
+                LastName = account.Surname
+            };
+        }
+
+        public string Id { get; private set; }
 
         public string UserName { get; set; }
 
         public string Email { get; set; }
+
+        public string Password { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<StormpathUser> manager)
         {
